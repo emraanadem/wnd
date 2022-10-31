@@ -77,41 +77,16 @@ async function runner(){
 
 runner()
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const http = require('http')
-
-// defining the Express app
+const express = require("express");
 const app = express();
-// defining an array to work as the database (temporary solution)
-
-// adding Helmet to enhance your Rest API's security
-app.use(helmet());
-
-// using bodyParser to parse JSON bodies into JS objects
-app.use(bodyParser.json());
-
-// enabling CORS for all requests
-app.use(cors());
-
-// adding morgan to log HTTP requests
-app.use(morgan('combined'));
-
-// defining an endpoint to return all ads
-app.get('/', (req, res) => {
-  res.send(datass);
-});   
-const hostname = '127.0.0.1';  
-const port = 3000;  
-const server = http.createServer((req, res) => {  
-  res.writeHead(200);
-  res.end(JSON.stringify(datass))
-});  
-server.listen(port, hostname, () => {  
-  console.log(`Server running at http://${hostname}:${port}/`);  
+app.get("/", function (req, res) {
+    res.end(JSON.stringify(datass));
 });
+app.listen(3001, function () {
+    console.log("Server is running on www.localhost:3001");
+});
+
+
+// defining an array to work as the database (temporary solution)
 
 /**2Go5v6wqFqscSVuoRbbXM3tjwbC_3VBVaDJ1rcejbZB5764J8 */
