@@ -3,10 +3,8 @@ const fs = require('fs');
 const NodeGeocoder = require('node-geocoder');
 
 
-let locc = ''
 
-const prompt = require("prompt-sync")({ sigint: true });
-locc = prompt("University Location: ");
+let locc = JSON.parse(fs.readFileSync('location.json'))
 
 const options = {
   provider: 'google',
