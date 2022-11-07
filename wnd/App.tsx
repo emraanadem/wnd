@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import Geocoder from 'react-native-geocoding';
 import { NavigationContainer } from '@react-navigation/native'
+import axios from 'axios';
 
 
 const { width, height } = Dimensions.get("window");
@@ -24,40 +25,23 @@ export async function onClickButtons(){
 
 }
 
+export async function mapStuff(){
+  const url = 'https://rich-jokes-bet-107-21-163-247.loca.lt'
+  const apiResponse = await fetch(url)
+  const json = await apiResponse.json()
+  const houseinfo = json[location]
+  mapMarkers(houseinfo)
+
+}
+
 export type TApiResponse = {
   data: any;
   error: any;
   loading: Boolean;
 };
 
-export const useApiGet = (url: string): TApiResponse => {
-  const [data, setData] = useState<any>();
-  const [error, setError] = useState<any>();
-  const [loading, setLoading] = useState<boolean>(false);
 
-  const getAPIData = async () => {
-    setLoading(true);
-    try {
-      const apiResponse = await fetch(url);
-      const json = await apiResponse.json();
-      let city = coords['loc'];
-      setData(json[city]);
-    } catch (error) {
-      setError(error);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    getAPIData();
-  }, []);
-
-  return { data, error, loading };
-};
-
-
-export function mapMarkers(placer: Array<any>): JSX.Element {
-  RegionInit()
+export function mapMarkers(placer: Array<any>): JSX.Element|JSX.Element[] {
   if (placer != undefined) {
     const finallist = placer.filter(item => {if(item[1] != null){
       return item
@@ -68,18 +52,17 @@ export function mapMarkers(placer: Array<any>): JSX.Element {
       item[3] = "$" + item[3]
     }})
     return finallist.map(item => 
-            <Marker 
-              key={String(item[0])}
-              coordinate={{ latitude: item[1], longitude: item[2] }}
-              title={String(item[0]).split(",", 1)[0]}
-              description={String(item[3])}
-            />)
+      <Marker 
+        key={String(item[0])}
+        coordinate={{ latitude: item[1], longitude: item[2] }}
+        title={String(item[0]).split(",", 1)[0]}
+        description={String(item[3])}
+      />)
   } else {
     return <></>
   }
 }
 
-let placer = new Array();
 let location = ""
 
 var INITIAL_POSITION;
@@ -98,20 +81,15 @@ async function RegionInit(){
     longitudeDelta: LONGITUDE_DELTA
     };}
 
+// 'https://rich-jokes-bet-107-21-163-247.loca.lt'
 
 export default function App(): JSX.Element{
-  // call to the hook
-  const data: TApiResponse = useApiGet(
-    'https://rich-jokes-bet-107-21-163-247.loca.lt'
-  );
-    // print the output
-  if (!data.loading) {
-    placer = data.data}
   const [text, setText] = useState('')
   const [showMap, setShowMap] = useState(false)
   const [showText, setShowText] = useState(true)
 
   const onClickButton = async () => {
+    await mapStuff()
     await onClickButtons()
     await RegionInit()
     setShowText(false);
@@ -123,7 +101,7 @@ export default function App(): JSX.Element{
           <MapView style={styles.map} provider={PROVIDER_GOOGLE}
             initialRegion={INITIAL_POSITION}
           >
-            {mapMarkers(data.data)}
+            {}
         </MapView>)}
       {showText && (
         <>
