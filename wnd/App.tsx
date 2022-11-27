@@ -3,10 +3,8 @@ import MapView, { PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import { StyleSheet, Button, Text, View, Dimensions, TextInput} from 'react-native';
 const coords = require('./coordinates.json');
 import { useState } from 'react';
-import { useEffect } from 'react';
 import Geocoder from 'react-native-geocoding';
-import { NavigationContainer } from '@react-navigation/native'
-import axios from 'axios';
+
 
 
 const { width, height } = Dimensions.get("window");
@@ -22,26 +20,18 @@ export async function onClickButtons(){
   const lats = json['lat']
   const longs = json['lng']
   return {lats, longs}
-
 }
 
 export async function mapStuff(){
-  const url = 'https://rich-jokes-bet-107-21-163-247.loca.lt'
+  const url = 'https://blue-dodos-sleep-107-21-163-247.loca.lt'
   const apiResponse = await fetch(url)
   const json = await apiResponse.json()
   const houseinfo = json[location]
-  mapMarkers(houseinfo)
-
+  return houseinfo
 }
 
-export type TApiResponse = {
-  data: any;
-  error: any;
-  loading: Boolean;
-};
 
-
-export function mapMarkers(placer: Array<any>): JSX.Element|JSX.Element[] {
+export function mapMarkers(placer: Array<any>){
   if (placer != undefined) {
     const finallist = placer.filter(item => {if(item[1] != null){
       return item
@@ -53,11 +43,11 @@ export function mapMarkers(placer: Array<any>): JSX.Element|JSX.Element[] {
     }})
     return finallist.map(item => 
       <Marker 
-        key={String(item[0])}
-        coordinate={{ latitude: item[1], longitude: item[2] }}
-        title={String(item[0]).split(",", 1)[0]}
-        description={String(item[3])}
-      />)
+              key={item[0]}
+              coordinate={{ latitude: item[1], longitude: item[2] }}
+              title={item[0].split(",")[0]}              
+              description={String(item[3])}
+            />)
   } else {
     return <></>
   }
@@ -89,9 +79,10 @@ export default function App(): JSX.Element{
   const [showText, setShowText] = useState(true)
 
   const onClickButton = async () => {
-    await mapStuff()
     await onClickButtons()
     await RegionInit()
+    const mapinfo = await mapStuff()
+    mapMarkers(mapinfo)
     setShowText(false);
     setShowMap(true);
   }
